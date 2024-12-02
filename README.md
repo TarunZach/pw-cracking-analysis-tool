@@ -2,7 +2,6 @@
 Password Cracking and Analysis Tool for cybersecurity
 
 
-
 ## 1. Prerequisites Checklist
 
 - Python 3.8+ 
