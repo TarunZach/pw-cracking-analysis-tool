@@ -1,0 +1,21 @@
+<!-- brute_force_app/templates/brute_force_app/result.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brute Force Attack Result</title>
+</head>
+<body>
+    <h1>Brute Force Attack Results</h1>
+    <p>Password found: <strong>{{ password }}</strong></p>
+    <p>Number of attempts: <strong>{{ attempts }}</strong></p>
+    <h2>Attempts:</h2>
+    <ul>
+        {% for attempt in attempts_list %}
+            <li>{{ attempt }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'brute_force_view' %}">Try Another Password</a>
+</body>
+</html>

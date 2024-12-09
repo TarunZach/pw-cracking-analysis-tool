@@ -1,0 +1,17 @@
+<!-- brute_force_app/templates/brute_force_app/brute_force.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brute Force Password Cracking</title>
+</head>
+<body>
+    <h1>Enter Password for Brute Force Attack</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Start Attack</button>
+    </form>
+</body>
+</html>
