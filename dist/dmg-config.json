@@ -1,0 +1,25 @@
+{
+  "title": "Main App",
+  "icon": "",
+  "background": "",
+  "window": {
+    "size": {
+      "width": 600,
+      "height": 400
+    }
+  },
+  "contents": [
+    {
+      "x": 130,
+      "y": 150,
+      "type": "file",
+      "path": "main.app"
+    },
+    {
+      "x": 400,
+      "y": 150,
+      "type": "link",
+      "path": "/Applications"
+    }
+  ]
+}

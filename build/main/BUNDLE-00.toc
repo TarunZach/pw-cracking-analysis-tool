@@ -1,0 +1,4 @@
+([('main',
+   '/Users/tarunzacharias/Desktop/UE/Software '
+   'Optimization/Project/pw-cracking-analysis-tool/dist/main',
+   'EXECUTABLE')],)

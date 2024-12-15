@@ -1,7 +1,1 @@
-devenv/bin/sqlformat
-devenv/bin/pip3
-devenv/bin/pip
-devenv/bin/django-admin
-devenv/bin/activate.csh
-devenv/bin/activate
-devenv/pyvenv.cfg
+/__pycache__
