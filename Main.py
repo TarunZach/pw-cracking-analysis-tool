@@ -16,7 +16,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import time  # Simulating time for the progress bar
-
+import string
+import re
 class PasswordAnalysisTool:
     def __init__(self, root):
         self.root = root
@@ -196,36 +197,94 @@ class PasswordAnalysisTool:
         )
 
     def calculate_password_strength(self, password):
-        # Comprehensive password strength calculation
-        strength = 0
+        """
+        Replaces the original password strength calculation with your custom score logic.
+        Returns an integer from 0 to 100.
+        """
 
-        # Length bonus
-        length_bonus = min(len(password) * 4, 40)
-        strength += length_bonus
+        # Edge case: empty or very short password
+        if not password or len(password.strip()) == 0:
+            return 0
 
-        # Complexity bonuses
-        has_upper = any(c.isupper() for c in password)
-        has_lower = any(c.islower() for c in password)
-        has_digit = any(c.isdigit() for c in password)
-        has_special = any(not c.isalnum() for c in password)
+        score = 0
 
-        if has_upper:
-            strength += 10
-        if has_lower:
-            strength += 10
-        if has_digit:
-            strength += 10
-        if has_special:
-            strength += 20
+        # --- Check for common password file ---
+        try:
+            with open('common_1mil.txt', 'r') as f:
+                common = f.read().splitlines()
+            if password in common:
+                # Password is too common, immediate score 0
+                return 0
+        except FileNotFoundError:
+            # If the file doesn't exist, just skip this step
+            pass
 
-        # Penalize common patterns
-        common_patterns = ['123', 'abc', 'qwe', 'password']
-        for pattern in common_patterns:
-            if pattern in password.lower():
-                strength -= 10
+        # --- Check length ---
+        length = len(password)
+        if length > 8:  
+            score += 1
+        if length > 12:
+            score += 1
+        if length > 16:
+            score += 1
+        if length > 20:
+            score += 1
 
-        # Ensure strength is between 0-100
-        return max(0, min(100, strength))
+        # --- Character diversity ---
+        upper_case = any(c.isupper() for c in password)
+        lower_case = any(c.islower() for c in password)
+        special = any(c in string.punctuation for c in password)
+        digits = any(c.isdigit() for c in password)
+        char_types_count = sum([upper_case, lower_case, special, digits])
+
+        if char_types_count > 1:
+            score += 1
+        if char_types_count > 2:
+            score += 1
+        if char_types_count > 3:
+            score += 1
+
+        # --- Check for common names in password ---
+        try:
+            with open('filtered_names.txt', 'r') as N:
+                names = N.read().splitlines()
+            for name in names:
+                if name.lower() in password.lower():
+                    score -= 1
+                    break
+        except FileNotFoundError:
+            pass
+
+        # --- Check for repeated characters (3+ in a row) ---
+        repeated_chars = re.search(r'(.)\1{2,}', password)
+        if repeated_chars:
+            score -= 1
+
+        # --- Check for numeric sequences ---
+        numeric_sequence = re.search(r'(012|123|234|345|456|567|678|789|890|987|876|765|654|543|432|321|210)', password)
+        if numeric_sequence:
+            score -= 1
+
+        # --- Check for common keyboard patterns ---
+        try:
+            with open('keyboard_patterns.txt', 'r') as kp_file:
+                keyboard_patterns = kp_file.read().splitlines()
+            for pattern in keyboard_patterns:
+                if pattern.lower() in password.lower():
+                    score -= 1
+                    break
+        except FileNotFoundError:
+            pass
+
+        # Ensure final score is within 0–7
+        if score < 0:
+            score = 0
+        elif score > 7:
+            score = 7
+
+        # Convert 0–7 score to a percentage (0–100)
+        strength_percentage = int((score / 7) * 100)
+        return strength_percentage
 
     def open_brute_force_window(self):
         self.create_attack_window("Brute Force Attack", self.perform_brute_force_action)
