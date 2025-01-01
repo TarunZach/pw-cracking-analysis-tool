@@ -12,10 +12,15 @@
 """
 
 import random
+import string
+import re
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import secrets
 import time  # Simulating time for the progress bar
+import hashlib
+
 
 class PasswordAnalysisTool:
     def __init__(self, root):
@@ -172,6 +177,9 @@ class PasswordAnalysisTool:
             )
             btn.pack(pady=10)
 
+
+
+
     def analyze_password_strength(self, event=None):
         password = self.password_entry.get()
         strength = self.calculate_password_strength(password)
@@ -195,37 +203,102 @@ class PasswordAnalysisTool:
             fg=color
         )
 
+
+
+
     def calculate_password_strength(self, password):
-        # Comprehensive password strength calculation
-        strength = 0
+        """
+        Replaces the original password strength calculation with your custom score logic.
+        Returns an integer from 0 to 100.
+        """
 
-        # Length bonus
-        length_bonus = min(len(password) * 4, 40)
-        strength += length_bonus
+        # Edge case: empty or very short password
+        if not password or len(password.strip()) == 0:
+            return 0
 
-        # Complexity bonuses
-        has_upper = any(c.isupper() for c in password)
-        has_lower = any(c.islower() for c in password)
-        has_digit = any(c.isdigit() for c in password)
-        has_special = any(not c.isalnum() for c in password)
+        score = 0
 
-        if has_upper:
-            strength += 10
-        if has_lower:
-            strength += 10
-        if has_digit:
-            strength += 10
-        if has_special:
-            strength += 20
+        # --- Check for common password file ---
+        try:
+            with open('./dst/common_1mil.txt', 'r') as f:
+                common = f.read().splitlines()
+            if password in common:
+                # Password is too common, immediate score 0
+                return 0
+        except FileNotFoundError:
+            # If the file doesn't exist, just skip this step
+            pass
 
-        # Penalize common patterns
-        common_patterns = ['123', 'abc', 'qwe', 'password']
-        for pattern in common_patterns:
-            if pattern in password.lower():
-                strength -= 10
+        # --- Check length ---
+        length = len(password)
+        if length > 8:  
+            score += 1
+        if length > 12:
+            score += 1
+        if length > 16:
+            score += 1
+        if length > 20:
+            score += 1
 
-        # Ensure strength is between 0-100
-        return max(0, min(100, strength))
+        # --- Character diversity ---
+        upper_case = any(c.isupper() for c in password)
+        lower_case = any(c.islower() for c in password)
+        special = any(c in string.punctuation for c in password)
+        digits = any(c.isdigit() for c in password)
+        char_types_count = sum([upper_case, lower_case, special, digits])
+
+        if char_types_count > 1:
+            score += 1
+        if char_types_count > 2:
+            score += 1
+        if char_types_count > 3:
+            score += 1
+
+        # --- Check for common names in password ---
+        try:
+            with open('./dst/filtered_names.txt', 'r') as N:
+                names = N.read().splitlines()
+            for name in names:
+                if name.lower() in password.lower():
+                    score -= 1
+                    break
+        except FileNotFoundError:
+            pass
+
+        # --- Check for repeated characters (3+ in a row) ---
+        repeated_chars = re.search(r'(.)\1{2,}', password)
+        if repeated_chars:
+            score -= 1
+
+        # --- Check for numeric sequences ---
+        numeric_sequence = re.search(r'(012|123|234|345|456|567|678|789|890|987|876|765|654|543|432|321|210)', password)
+        if numeric_sequence:
+            score -= 1
+
+        # --- Check for common keyboard patterns ---
+        try:
+            with open('./dst/keyboard_patterns.txt', 'r') as kp_file:
+                keyboard_patterns = kp_file.read().splitlines()
+            for pattern in keyboard_patterns:
+                if pattern.lower() in password.lower():
+                    score -= 1
+                    break
+        except FileNotFoundError:
+            pass
+
+        # Ensure final score is within 0–7
+        if score < 0:
+            score = 0
+        elif score > 7:
+            score = 7
+
+        # Convert 0–7 score to a percentage (0–100)
+        strength_percentage = int((score / 7) * 100)
+        return strength_percentage
+
+
+
+
 
     def open_brute_force_window(self):
         self.create_attack_window("Brute Force Attack", self.perform_brute_force_action)
@@ -236,8 +309,19 @@ class PasswordAnalysisTool:
     def open_rainbow_table_window(self):
         self.create_attack_window("Rainbow Table Attack", self.perform_rainbow_table_action)
 
+
+
+
+
+
+
+
+
+
+
     def perform_brute_force_action(self, text_box):
-        attack_name = "Simulate Attack"
+        
+        attack_name = "Brute Force Attack"
         delay = 0.05
 
         # Create the attack window first
@@ -245,23 +329,84 @@ class PasswordAnalysisTool:
         attack_window.title(attack_name)
         
         # Create and pack the label
-        tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(pady=10)
+        labell = tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(pady=10)
         
         # Create and pack the progress bar
         progress = ttk.Progressbar(attack_window, orient="horizontal", length=300, mode="determinate")
         progress.pack(pady=10)
 
-        # Now update the progress bar
-        for i in range(101):
-            progress['value'] = i
+        # Hardcoded password for brute force simulation
+        print(str(text_box.get("1.0", tk.END)))
+        password = str(text_box.get("1.0", tk.END).replace("\n", ""))  # Example password to crack
+        time_limit = 1000  # Time limit for the brute-force simulation (in seconds)
+
+        # Character sets for brute force
+        char_set_letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        char_set_digits = '1234567890'
+        char_set_special = '!@#$%^&*()_+-=[]{}|;:,.<>?'
+
+        # Creating structure for password
+        structure = []
+        for char in password:
+            if char in char_set_letters:
+                structure.append(char_set_letters)
+            elif char in char_set_digits:
+                structure.append(char_set_digits)
+            elif char in char_set_special:
+                structure.append(char_set_special)
+            else:
+                raise ValueError("Unsupported character in password!")
+
+        # Brute force simulation (simplified)
+        attempt_count = 0
+        password_found = None
+        start_time = time.time()
+
+        def generate_guess():
+            guess = []
+            for char_set in structure:
+                index = secrets.randbelow(len(char_set))
+                guess.append(char_set[index])
+            return ''.join(guess)
+
+        while time.time() - start_time < time_limit:
+            guess = generate_guess()
+            print(generate_guess())
+            attempt_count += 1
+
+            if guess == password:
+                password_found = guess
+                break
+
+            # Update the progress bar
+            progress['value'] = (attempt_count % 101)
             attack_window.update_idletasks()
             time.sleep(delay)
-        
-        # Show completion message
-        messagebox.showinfo(attack_name, f"{attack_name} Completed!")
-        
-        # Update the text box
+
+        if password_found:
+            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password Found: {password_found}")
+            progress.pack_forget()
+
+
+            
+        else:
+            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password not found within the time limit.")
+            progress.destroy()
+
+
+        # Update the text box with status
+        progress.pack_forget()
+        attack_window.destroy()
         text_box.insert(tk.END, "\nSimulating Brute Force Attack...\n")
+        text_box.insert(tk.END, "\nCompleted! Password Found: "+ password_found +"\n")
+
+        #text_box.insert(tk.END, "\n"+password_found+"\n")
+        
+
+
+
+
+
 
 
 
@@ -293,27 +438,87 @@ class PasswordAnalysisTool:
         # Update the text box
         text_box.insert(tk.END, "\nExecuting Dictionary Attack...\n")
 
+
+
+
+
+
+
+
+
+
     def perform_rainbow_table_action(self, text_box):
         attack_name = "Rainbow Table"
-        delay = 0.05
+        delay = 0.02  # Reduced delay for faster progress bar updates
 
         # Create the attack window first
         attack_window = tk.Toplevel()
         attack_window.title(attack_name)
-        
+
         # Create and pack the label
         tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(pady=10)
-        
+
         # Create and pack the progress bar
         progress = ttk.Progressbar(attack_window, orient="horizontal", length=300, mode="determinate")
         progress.pack(pady=10)
 
-        # Now update the progress bar
-        for i in range(101):
-            progress['value'] = i
-            attack_window.update_idletasks()
-            time.sleep(delay)
-        
+        input_file = "./dst/input_passwords.txt"
+        output_file = "./dst/rainbow_table_file.txt"
+        hash_function = hashlib.md5
+
+        unique_passwords = set()
+        try:
+            # Step 1: Reading up to 10 passwords
+            with open(input_file, 'r') as infile:
+                lines = infile.readlines()[:10]  # Only process the first 10 passwords
+                total_lines = len(lines)
+                for index, line in enumerate(lines):
+                    password = line.strip()
+                    if password:
+                        unique_passwords.add(password)
+                    progress['value'] = (index + 1) / total_lines * 50  # Update progress bar for the first 50%
+                    attack_window.update_idletasks()
+                    time.sleep(delay)
+
+            # Step 2: Writing the hashed passwords to the file
+            with open(output_file, 'w') as outfile:
+                total_passwords = len(unique_passwords)
+                for index, password in enumerate(unique_passwords):
+                    hashed = hash_function(password.encode()).hexdigest()
+                    outfile.write(f"{password}:{hashed}\n")
+                    print(f"{password} : {hashed}")
+                    text_box.insert(tk.END, f"\n{password} : {hashed}\n")
+                    progress['value'] = 50 + ((index + 1) / total_passwords * 50)  # Update progress bar for the next 50%
+                    attack_window.update_idletasks()
+                    time.sleep(delay)
+
+            messagebox.showinfo(attack_name, f"{attack_name} Completed! Rainbow table generated successfully.")
+        except Exception as e:
+            messagebox.showerror(attack_name, f"An error occurred: {str(e)}")
+
+        # Cleanup: Hide or destroy the label, progress bar, and attack window
+        progress.pack_forget()
+        attack_window.destroy()
+
+        # Update the text box with the result
+        text_box.insert(tk.END, f"\n{attack_name} operation completed.\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         # Show completion message
         messagebox.showinfo(attack_name, f"{attack_name} Completed!")
         
