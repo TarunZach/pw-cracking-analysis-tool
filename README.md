@@ -48,3 +48,9 @@ After clicking on the "Brute Force" button, the following text is displayed in t
 Simulating Brute Force Attack...
 
 
+## Tests
+
+```
+python3 -m unittest test_password_tool.py
+```
+
