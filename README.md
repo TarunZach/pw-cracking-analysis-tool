@@ -46,7 +46,7 @@ The `Main.py` script includes the following key components:
 After clicking on the "Brute Force" button, the following text is displayed in the text box:
 ```
 Simulating Brute Force Attack...
-
+```
 
 ## Tests
 
