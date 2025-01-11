@@ -46,26 +46,31 @@ class TestPasswordAnalysisTool(unittest.TestCase):
 
     def test_password_strength_empty(self):
         """Test password strength calculation for empty password"""
+        logging.info("Test password strength calculation for empty password")
         strength = self.app.calculate_password_strength("")
         self.assertEqual(strength, 0)
 
     def test_password_strength_weak(self):
         """Test password strength calculation for weak password"""
+        logging.info("Test password strength calculation for weak password")
         strength = self.app.calculate_password_strength("password123")
         self.assertLess(strength, 60)
 
     def test_password_strength_strong(self):
         """Test password strength calculation for strong password"""
+        logging.info("Test password strength calculation for strong password")
         strength = self.app.calculate_password_strength("P@ssw0rd!2023Complex")
         self.assertGreaterEqual(strength, 80)
 
     def test_password_common_patterns(self):
         """Test password strength calculation with common patterns"""
+        logging.info("Test password strength calculation with common patterns")
         strength = self.app.calculate_password_strength("qwerty123")
         self.assertLess(strength, 50)
 
     def test_password_repeated_chars(self):
         """Test password strength calculation with repeated characters"""
+        logging.info("Test password strength calculation with repeated characters")
         strength = self.app.calculate_password_strength("aaa123")
         self.assertLess(strength, 50)
 
