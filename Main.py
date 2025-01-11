@@ -319,6 +319,7 @@ class PasswordAnalysisTool:
 
 
 
+
     def perform_brute_force_action(self, text_box):
         
         attack_name = "Brute Force Attack"
@@ -338,7 +339,7 @@ class PasswordAnalysisTool:
         # Hardcoded password for brute force simulation
         print(str(text_box.get("1.0", tk.END)))
         password = str(text_box.get("1.0", tk.END).replace("\n", ""))  # Example password to crack
-        time_limit = 1000  # Time limit for the brute-force simulation (in seconds)
+        time_limit = 180  # Time limit for the brute-force simulation (in seconds)
 
         # Character sets for brute force
         char_set_letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -382,15 +383,17 @@ class PasswordAnalysisTool:
             progress['value'] = (attempt_count % 101)
             attack_window.update_idletasks()
             time.sleep(delay)
+        
+        elapsed_time = time.time() - start_time
 
         if password_found:
-            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password Found: {password_found}")
+            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password Found: {password_found} in {elapsed_time:.2f} seconds")
             progress.pack_forget()
 
 
             
         else:
-            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password not found within the time limit.")
+            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password not found within the {time_limit} seconds.")
             progress.destroy()
 
 
@@ -402,7 +405,6 @@ class PasswordAnalysisTool:
 
         #text_box.insert(tk.END, "\n"+password_found+"\n")
         
-
 
 
 
@@ -454,6 +456,14 @@ class PasswordAnalysisTool:
         def hash_password(word):
             return hashlib.sha256(word.encode()).hexdigest()
 
+        # Calculate and display estimated time
+        estimated_time = total_words * delay
+        est_minutes, est_seconds = divmod(estimated_time, 60)
+        tk.Label(
+            attack_window,
+            text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds"
+        ).pack(pady=5)
+
         # Start the attack
         for attempt_count, candidate in enumerate(wordlist, 1):
             # Update the progress bar
@@ -485,10 +495,15 @@ class PasswordAnalysisTool:
 
 
 
+
+
+
+
     def perform_rainbow_table_action(self, text_box):
         import hashlib
         import time
         from tkinter import messagebox, ttk
+        import tkinter as tk
 
         attack_name = "Rainbow Table"
         delay = 0.02  # Reduced delay for faster progress bar updates
@@ -529,11 +544,19 @@ class PasswordAnalysisTool:
             unique_passwords = set(passwords)
             total_passwords = len(unique_passwords)
 
+            # Calculate and display estimated time
+            estimated_time = total_passwords * delay
+            est_minutes, est_seconds = divmod(estimated_time, 60)
+            tk.Label(
+                attack_window,
+                text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds"
+            ).pack(pady=5)
+
             with open(output_file, 'w') as outfile:
                 for index, password in enumerate(unique_passwords):
                     hashed = hash_function(password.encode()).hexdigest()
                     outfile.write(f"{password}:{hashed}\n")
-                    
+
                     # Update progress bar and display the hash in the text box
                     progress['value'] = ((index + 1) / total_passwords) * 100
                     text_box.insert(tk.END, f"\n{password} : {hashed}\n")
@@ -552,8 +575,6 @@ class PasswordAnalysisTool:
 
         # Update the text box with the result
         text_box.insert(tk.END, f"\n{attack_name} operation completed.\n")
-
-
 
 
 
@@ -584,13 +605,13 @@ class PasswordAnalysisTool:
 
         about_text = """
 This application is developed to help users analyze password strength and learn about security techniques by
-        ✔️ Shayan - Number 1
-        ✔️ Aida - Number 2
-        ✔️ Anamay - Number 3
-        ✔️ Mahdi - Number 4
-        ✔️ Saeedeh - Number 5
-        ✔️ Tarun - Number 6
-        ✔️ Reza - Number 7
+        ✔️ Shayan Rhimi
+        ✔️ Aida Sharbatdar
+        ✔️ Anamay Charudatta Brahme
+        ✔️ Mahdi Roshanizarmehri
+        ✔️ Saeedeh Alamkar
+        ✔️ Tarun Zacharias Akkarakalam
+        ✔️ Mohammadreza Rashidi
         """
         about_label = tk.Label(
             top,
@@ -598,7 +619,7 @@ This application is developed to help users analyze password strength and learn 
             font=('Arial', 22),
             bg=self.bg_color,
             fg=self.fg_color,
-            wraplength=350,
+            wraplength=450,
             justify="left"
         )
         about_label.pack(pady=20)
