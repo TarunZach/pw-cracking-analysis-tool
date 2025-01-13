@@ -15,8 +15,7 @@ import random
 import string
 import re
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 import secrets
 import time  # Simulating time for the progress bar
 import hashlib
@@ -29,10 +28,10 @@ class PasswordAnalysisTool:
         self.root.geometry("1200x800")
 
         # Color Scheme
-        self.bg_color = '#0A0A1A'  # Deep dark blue-black
-        self.fg_color = '#E0E0FF'  # Soft light blue-white
-        self.accent_color = '#00FFFF'  # Bright cyan neon
-        self.button_bg = '#000000'  # Pure black button background
+        self.bg_color = "#0A0A1A"  # Deep dark blue-black
+        self.fg_color = "#E0E0FF"  # Soft light blue-white
+        self.accent_color = "#00FFFF"  # Bright cyan neon
+        self.button_bg = "#000000"  # Pure black button background
 
         # Star animation parameters
         self.stars = []
@@ -46,11 +45,7 @@ class PasswordAnalysisTool:
 
     def create_starry_background(self):
         # Background canvas for star animation
-        self.bg_canvas = tk.Canvas(
-            self.root,
-            bg=self.bg_color,
-            highlightthickness=0
-        )
+        self.bg_canvas = tk.Canvas(self.root, bg=self.bg_color, highlightthickness=0)
         self.bg_canvas.place(x=0, y=0, relwidth=1, relheight=1)
 
         # Create stars
@@ -59,17 +54,17 @@ class PasswordAnalysisTool:
             y = random.randint(0, 800)
             size = random.uniform(1, 3)
             star = self.bg_canvas.create_oval(
-                x, y, x + size, y + size,
-                fill='white',
-                outline=''
+                x, y, x + size, y + size, fill="white", outline=""
             )
-            self.stars.append({
-                'obj': star,
-                'x': x,
-                'y': y,
-                'size': size,
-                'speed': random.uniform(0.1, 0.5)
-            })
+            self.stars.append(
+                {
+                    "obj": star,
+                    "x": x,
+                    "y": y,
+                    "size": size,
+                    "speed": random.uniform(0.1, 0.5),
+                }
+            )
 
         # Start star animation
         self.animate_stars()
@@ -77,19 +72,15 @@ class PasswordAnalysisTool:
     def animate_stars(self):
         for star in self.stars:
             # Move star
-            star['y'] += star['speed']
+            star["y"] += star["speed"]
 
             # Reset star if it goes below screen
-            if star['y'] > 800:
-                star['y'] = 0
-                star['x'] = random.randint(0, 1200)
+            if star["y"] > 800:
+                star["y"] = 0
+                star["x"] = random.randint(0, 1200)
 
             # Update star position
-            self.bg_canvas.move(
-                star['obj'],
-                0,
-                star['speed']
-            )
+            self.bg_canvas.move(star["obj"], 0, star["speed"])
 
         # Continue animation
         self.root.after(50, self.animate_stars)
@@ -103,9 +94,9 @@ class PasswordAnalysisTool:
         self.password_icon = tk.Label(
             self.main_frame,
             text="🔒",  # Placeholder for SVG image
-            font=('Arial', 64),
+            font=("Arial", 64),
             bg=self.bg_color,
-            fg=self.accent_color
+            fg=self.accent_color,
         )
         self.password_icon.pack(pady=(0, 20))
 
@@ -113,9 +104,9 @@ class PasswordAnalysisTool:
         title_label = tk.Label(
             self.main_frame,
             text="Password Security Analyzer",
-            font=('Arial', 24, 'bold'),
+            font=("Arial", 24, "bold"),
             bg=self.bg_color,
-            fg=self.accent_color
+            fg=self.accent_color,
         )
         title_label.pack(pady=(0, 20))
 
@@ -123,21 +114,21 @@ class PasswordAnalysisTool:
         sample_label = tk.Label(
             self.main_frame,
             text="Software Opmization Project Winter 2024",
-            font=('Arial', 18, 'italic'),
+            font=("Arial", 18, "italic"),
             bg=self.bg_color,
-            fg=self.accent_color
+            fg=self.accent_color,
         )
         sample_label.pack(pady=(0, 20))
 
         # Password Entry
         self.password_entry = tk.Entry(
             self.main_frame,
-            show='*',
-            font=('Courier', 18),
+            show="*",
+            font=("Courier", 18),
             width=30,
-            bg='white',
+            bg="white",
             fg=self.bg_color,
-            insertbackground=self.accent_color
+            insertbackground=self.accent_color,
         )
         self.password_entry.pack(pady=20)
 
@@ -145,14 +136,14 @@ class PasswordAnalysisTool:
         self.analysis_label = tk.Label(
             self.main_frame,
             text="Password Strength: N/A",
-            font=('Arial', 16),
+            font=("Arial", 16),
             bg=self.bg_color,
-            fg=self.accent_color
+            fg=self.accent_color,
         )
         self.analysis_label.pack(pady=10)
 
         # Bind real-time analysis
-        self.password_entry.bind('<KeyRelease>', self.analyze_password_strength)
+        self.password_entry.bind("<KeyRelease>", self.analyze_password_strength)
 
         # Buttons
         buttons_config = [
@@ -160,7 +151,7 @@ class PasswordAnalysisTool:
             ("DICTIONARY", self.open_dictionary_attack_window),
             ("RAINBOW TABLE", self.open_rainbow_table_window),
             ("ABOUT", self.show_about),
-            ("EXIT", self.exit_application)
+            ("EXIT", self.exit_application),
         ]
 
         for text, command in buttons_config:
@@ -168,17 +159,14 @@ class PasswordAnalysisTool:
                 self.main_frame,
                 text=text,
                 command=command,
-                font=('Arial', 16, 'bold'),
+                font=("Arial", 16, "bold"),
                 width=25,
                 bg=self.button_bg,
-                fg='blue',  # Updated font color
-                activebackground='#1A1A3A',
-                activeforeground=self.fg_color
+                fg="blue",  # Updated font color
+                activebackground="#1A1A3A",
+                activeforeground=self.fg_color,
             )
             btn.pack(pady=10)
-
-
-
 
     def analyze_password_strength(self, event=None):
         password = self.password_entry.get()
@@ -186,25 +174,21 @@ class PasswordAnalysisTool:
 
         # Update strength label with color coding
         if strength < 30:
-            color = 'red'
-            level = 'Very Weak'
+            color = "red"
+            level = "Very Weak"
         elif strength < 60:
-            color = 'orange'
-            level = 'Weak'
+            color = "orange"
+            level = "Weak"
         elif strength < 80:
-            color = 'yellow'
-            level = 'Moderate'
+            color = "yellow"
+            level = "Moderate"
         else:
-            color = 'green'
-            level = 'Strong'
+            color = "green"
+            level = "Strong"
 
         self.analysis_label.config(
-            text=f"Password Strength: {level} ({strength}%)",
-            fg=color
+            text=f"Password Strength: {level} ({strength}%)", fg=color
         )
-
-
-
 
     def calculate_password_strength(self, password):
         """
@@ -220,7 +204,7 @@ class PasswordAnalysisTool:
 
         # --- Check for common password file ---
         try:
-            with open('./dst/common_1mil.txt', 'r') as f:
+            with open("./dst/common_1mil.txt", "r") as f:
                 common = f.read().splitlines()
             if password in common:
                 # Password is too common, immediate score 0
@@ -231,7 +215,7 @@ class PasswordAnalysisTool:
 
         # --- Check length ---
         length = len(password)
-        if length > 8:  
+        if length > 8:
             score += 1
         if length > 12:
             score += 1
@@ -256,7 +240,7 @@ class PasswordAnalysisTool:
 
         # --- Check for common names in password ---
         try:
-            with open('./dst/filtered_names.txt', 'r') as N:
+            with open("./dst/filtered_names.txt", "r") as N:
                 names = N.read().splitlines()
             for name in names:
                 if name.lower() in password.lower():
@@ -266,18 +250,21 @@ class PasswordAnalysisTool:
             pass
 
         # --- Check for repeated characters (3+ in a row) ---
-        repeated_chars = re.search(r'(.)\1{2,}', password)
+        repeated_chars = re.search(r"(.)\1{2,}", password)
         if repeated_chars:
             score -= 1
 
         # --- Check for numeric sequences ---
-        numeric_sequence = re.search(r'(012|123|234|345|456|567|678|789|890|987|876|765|654|543|432|321|210)', password)
+        numeric_sequence = re.search(
+            r"(012|123|234|345|456|567|678|789|890|987|876|765|654|543|432|321|210)",
+            password,
+        )
         if numeric_sequence:
             score -= 1
 
         # --- Check for common keyboard patterns ---
         try:
-            with open('./dst/keyboard_patterns.txt', 'r') as kp_file:
+            with open("./dst/keyboard_patterns.txt", "r") as kp_file:
                 keyboard_patterns = kp_file.read().splitlines()
             for pattern in keyboard_patterns:
                 if pattern.lower() in password.lower():
@@ -296,55 +283,49 @@ class PasswordAnalysisTool:
         strength_percentage = int((score / 7) * 100)
         return strength_percentage
 
-
-
-
-
     def open_brute_force_window(self):
         self.create_attack_window("Brute Force Attack", self.perform_brute_force_action)
 
     def open_dictionary_attack_window(self):
-        self.create_attack_window("Dictionary Attack", self.perform_dictionary_attack_action)
+        self.create_attack_window(
+            "Dictionary Attack", self.perform_dictionary_attack_action
+        )
 
     def open_rainbow_table_window(self):
-        self.create_attack_window("Rainbow Table Attack", self.perform_rainbow_table_action)
-
-
-
-
-
-
-
-
-
-
-
+        self.create_attack_window(
+            "Rainbow Table Attack", self.perform_rainbow_table_action
+        )
 
     def perform_brute_force_action(self, text_box):
-        
         attack_name = "Brute Force Attack"
         delay = 0.05
 
         # Create the attack window first
         attack_window = tk.Toplevel()
         attack_window.title(attack_name)
-        
-        # Create and pack the label
-        labell = tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(pady=10)
-        
+
+        # # Create and pack the label
+        # label = tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(
+        #     pady=10
+        # )
+
         # Create and pack the progress bar
-        progress = ttk.Progressbar(attack_window, orient="horizontal", length=300, mode="determinate")
+        progress = ttk.Progressbar(
+            attack_window, orient="horizontal", length=300, mode="determinate"
+        )
         progress.pack(pady=10)
 
         # Hardcoded password for brute force simulation
         print(str(text_box.get("1.0", tk.END)))
-        password = str(text_box.get("1.0", tk.END).replace("\n", ""))  # Example password to crack
+        password = str(
+            text_box.get("1.0", tk.END).replace("\n", "")
+        )  # Example password to crack
         time_limit = 180  # Time limit for the brute-force simulation (in seconds)
 
         # Character sets for brute force
-        char_set_letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        char_set_digits = '1234567890'
-        char_set_special = '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        char_set_letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        char_set_digits = "1234567890"
+        char_set_special = "!@#$%^&*()_+-=[]{}|;:,.<>?"
 
         # Creating structure for password
         structure = []
@@ -368,7 +349,7 @@ class PasswordAnalysisTool:
             for char_set in structure:
                 index = secrets.randbelow(len(char_set))
                 guess.append(char_set[index])
-            return ''.join(guess)
+            return "".join(guess)
 
         while time.time() - start_time < time_limit:
             guess = generate_guess()
@@ -380,45 +361,35 @@ class PasswordAnalysisTool:
                 break
 
             # Update the progress bar
-            progress['value'] = (attempt_count % 101)
+            progress["value"] = attempt_count % 101
             attack_window.update_idletasks()
             time.sleep(delay)
-        
+
         elapsed_time = time.time() - start_time
 
         if password_found:
-            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password Found: {password_found} in {elapsed_time:.2f} seconds")
+            messagebox.showinfo(
+                attack_name,
+                f"{attack_name} Completed! Password Found: {password_found} in {elapsed_time:.2f} seconds",
+            )
             progress.pack_forget()
 
-
-            
         else:
-            messagebox.showinfo(attack_name, f"{attack_name} Completed! Password not found within the {time_limit} seconds.")
+            messagebox.showinfo(
+                attack_name,
+                f"{attack_name} Completed! Password not found within the {time_limit} seconds.",
+            )
             progress.destroy()
-
 
         # Update the text box with status
         progress.pack_forget()
         attack_window.destroy()
         text_box.insert(tk.END, "\nSimulating Brute Force Attack...\n")
-        text_box.insert(tk.END, "\nCompleted! Password Found: "+ password_found +"\n")
+        text_box.insert(tk.END, "\nCompleted! Password Found: " + password_found + "\n")
 
-        #text_box.insert(tk.END, "\n"+password_found+"\n")
-        
-
-
-
-
-
-
-
+        # text_box.insert(tk.END, "\n"+password_found+"\n")
 
     def perform_dictionary_attack_action(self, text_box):
-        import tkinter as tk
-        from tkinter import ttk, messagebox
-        import hashlib
-        import time
-
         attack_name = "Dictionary Attack"
         delay = 0.05
 
@@ -430,7 +401,9 @@ class PasswordAnalysisTool:
         tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(pady=10)
 
         # Create and pack the progress bar
-        progress = ttk.Progressbar(attack_window, orient="horizontal", length=300, mode="determinate")
+        progress = ttk.Progressbar(
+            attack_window, orient="horizontal", length=300, mode="determinate"
+        )
         progress.pack(pady=10)
 
         # Get the target password from the text box
@@ -439,15 +412,17 @@ class PasswordAnalysisTool:
         # Load the wordlist
         wordlist_file = "./dst/passwords.txt"
         try:
-            with open(wordlist_file, 'r') as wfile:
+            with open(wordlist_file, "r") as wfile:
                 wordlist = [line.strip() for line in wfile if line.strip()]
         except FileNotFoundError:
-            messagebox.showerror(attack_name, f"Error: Wordlist file '{wordlist_file}' not found.")
+            messagebox.showerror(
+                attack_name, f"Error: Wordlist file '{wordlist_file}' not found."
+            )
             attack_window.destroy()
             return
 
         total_words = len(wordlist)
-        progress['value'] = 0  # Initialize progress
+        progress["value"] = 0  # Initialize progress
 
         # Define hash comparison mode (set to True if target_password is hashed)
         hash_mode = False
@@ -461,13 +436,13 @@ class PasswordAnalysisTool:
         est_minutes, est_seconds = divmod(estimated_time, 60)
         tk.Label(
             attack_window,
-            text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds"
+            text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds",
         ).pack(pady=5)
 
         # Start the attack
         for attempt_count, candidate in enumerate(wordlist, 1):
             # Update the progress bar
-            progress['value'] = (attempt_count / total_words) * 100
+            progress["value"] = (attempt_count / total_words) * 100
             attack_window.update_idletasks()
 
             # Perform comparison
@@ -476,7 +451,10 @@ class PasswordAnalysisTool:
                 # Success: Update the UI and display success message
                 text_box.insert(tk.END, f"\nSuccess! Password found: {candidate}\n")
                 text_box.see(tk.END)
-                messagebox.showinfo(attack_name, f"{attack_name} Completed!\nPassword Found: {candidate}")
+                messagebox.showinfo(
+                    attack_name,
+                    f"{attack_name} Completed!\nPassword Found: {candidate}",
+                )
                 attack_window.destroy()
                 return
 
@@ -490,33 +468,24 @@ class PasswordAnalysisTool:
         # If password is not found
         text_box.insert(tk.END, "\nPassword not found in the wordlist.\n")
         text_box.see(tk.END)
-        messagebox.showinfo(attack_name, f"{attack_name} Completed!\nPassword not found.")
+        messagebox.showinfo(
+            attack_name, f"{attack_name} Completed!\nPassword not found."
+        )
         attack_window.destroy()
 
-
-
-
-
-
-
     def perform_rainbow_table_action(self, text_box):
-        import hashlib
-        import time
-        from tkinter import messagebox, ttk
-        import tkinter as tk
-
         attack_name = "Rainbow Table"
         delay = 0.02  # Reduced delay for faster progress bar updates
 
-        # Create the attack window first
         attack_window = tk.Toplevel()
         attack_window.title(attack_name)
 
         # Create and pack the label
         tk.Label(attack_window, text=f"{attack_name} in Progress...").pack(pady=10)
 
-        # Create and pack the progress bar
-        progress = ttk.Progressbar(attack_window, orient="horizontal", length=300, mode="determinate")
+        progress = ttk.Progressbar(
+            attack_window, orient="horizontal", length=300, mode="determinate"
+        )
         progress.pack(pady=10)
 
         input_file = "./dst/input_passwords.txt"
@@ -524,23 +493,24 @@ class PasswordAnalysisTool:
         hash_function = hashlib.md5
 
         try:
-            # Step 1: Collect user input from the text box
             user_input = text_box.get("1.0", tk.END).strip()
-            passwords = [line.strip() for line in user_input.splitlines() if line.strip()]
+            passwords = [
+                line.strip() for line in user_input.splitlines() if line.strip()
+            ]
 
             if not passwords:
-                messagebox.showerror(attack_name, "No passwords provided in the text box.")
+                messagebox.showerror(
+                    attack_name, "No passwords provided in the text box."
+                )
                 attack_window.destroy()
                 return
 
-            # Limit to the first 10 passwords
             passwords = passwords[:10]
 
             # Write passwords to the input file
-            with open(input_file, 'w') as infile:
+            with open(input_file, "w") as infile:
                 infile.write("\n".join(passwords) + "\n")
 
-            # Step 2: Writing the hashed passwords to the output file
             unique_passwords = set(passwords)
             total_passwords = len(unique_passwords)
 
@@ -549,22 +519,29 @@ class PasswordAnalysisTool:
             est_minutes, est_seconds = divmod(estimated_time, 60)
             tk.Label(
                 attack_window,
-                text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds"
+                text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds",
             ).pack(pady=5)
 
-            with open(output_file, 'w') as outfile:
+            with open(output_file, "w") as outfile:
                 for index, password in enumerate(unique_passwords):
+                    # Hash the password
                     hashed = hash_function(password.encode()).hexdigest()
                     outfile.write(f"{password}:{hashed}\n")
 
-                    # Update progress bar and display the hash in the text box
-                    progress['value'] = ((index + 1) / total_passwords) * 100
-                    text_box.insert(tk.END, f"\n{password} : {hashed}\n")
+                    # Display "Password found successfully" for each password
+                    progress["value"] = ((index + 1) / total_passwords) * 100
+                    text_box.insert(
+                        tk.END,
+                        f"\n{password} : {hashed}\nPassword found successfully!\n",
+                    )
                     text_box.see(tk.END)  # Auto-scroll
                     attack_window.update_idletasks()
                     time.sleep(delay)
 
-            messagebox.showinfo(attack_name, f"{attack_name} Completed! Rainbow table generated successfully.")
+                messagebox.showinfo(
+                    attack_name,
+                    f"{attack_name} Completed! Rainbow table generated successfully.",
+                )
 
         except Exception as e:
             messagebox.showerror(attack_name, f"An error occurred: {str(e)}")
@@ -576,18 +553,6 @@ class PasswordAnalysisTool:
         # Update the text box with the result
         text_box.insert(tk.END, f"\n{attack_name} operation completed.\n")
 
-
-
-
-
-
-
-        # Show completion message
-        messagebox.showinfo(attack_name, f"{attack_name} Completed!")
-        
-        # Update the text box
-        text_box.insert(tk.END, "\nGenerating Rainbow Table...\n")
-
     def show_about(self):
         top = tk.Toplevel(self.root)
         top.title("About Us")
@@ -597,9 +562,9 @@ class PasswordAnalysisTool:
         label = tk.Label(
             top,
             text="About Us",
-            font=('Arial', 25, 'bold'),
+            font=("Arial", 25, "bold"),
             bg=self.bg_color,
-            fg=self.accent_color
+            fg=self.accent_color,
         )
         label.pack(pady=20)
 
@@ -616,11 +581,11 @@ This application is developed to help users analyze password strength and learn 
         about_label = tk.Label(
             top,
             text=about_text,
-            font=('Arial', 22),
+            font=("Arial", 22),
             bg=self.bg_color,
             fg=self.fg_color,
             wraplength=450,
-            justify="left"
+            justify="left",
         )
         about_label.pack(pady=20)
 
@@ -628,9 +593,9 @@ This application is developed to help users analyze password strength and learn 
             top,
             text="Close",
             command=top.destroy,
-            font=('Arial', 14, 'bold'),
+            font=("Arial", 14, "bold"),
             bg=self.button_bg,
-            fg='blue'
+            fg="blue",
         )
         close_button.pack(pady=10)
 
@@ -643,9 +608,9 @@ This application is developed to help users analyze password strength and learn 
         label = tk.Label(
             top,
             text=f"{title} Window",
-            font=('Arial', 18, 'bold'),
+            font=("Arial", 18, "bold"),
             bg=self.bg_color,
-            fg=self.accent_color
+            fg=self.accent_color,
         )
         label.pack(pady=20)
 
@@ -653,10 +618,10 @@ This application is developed to help users analyze password strength and learn 
             top,
             height=5,
             width=40,
-            bg='black',
+            bg="black",
             fg=self.fg_color,
-            font=('Courier', 12),
-            wrap='word'
+            font=("Courier", 12),
+            wrap="word",
         )
         text_box.pack(pady=10)
 
@@ -664,11 +629,11 @@ This application is developed to help users analyze password strength and learn 
             top,
             text="Start",
             command=lambda: action_function(text_box),
-            font=('Arial', 14, 'bold'),
+            font=("Arial", 14, "bold"),
             bg=self.button_bg,
-            fg='blue',
-            activebackground='#1A1A3A',
-            activeforeground=self.fg_color
+            fg="blue",
+            activebackground="#1A1A3A",
+            activeforeground=self.fg_color,
         )
         action_button.pack(pady=10)
 
@@ -676,20 +641,20 @@ This application is developed to help users analyze password strength and learn 
             top,
             text="Close",
             command=top.destroy,
-            font=('Arial', 14, 'bold'),
+            font=("Arial", 14, "bold"),
             bg=self.button_bg,
-            fg='blue',
-            activebackground='#1A1A3A',
-            activeforeground=self.fg_color
+            fg="blue",
+            activebackground="#1A1A3A",
+            activeforeground=self.fg_color,
         )
         close_button.pack(pady=10)
 
     def exit_application(self):
         self.root.destroy()
 
+
 # Create main application window
 if __name__ == "__main__":
     root = tk.Tk()
     app = PasswordAnalysisTool(root)
     root.mainloop()
-
