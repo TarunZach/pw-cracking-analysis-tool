@@ -474,6 +474,9 @@ class PasswordAnalysisTool:
         attack_window.destroy()
 
     def perform_rainbow_table_action(self, text_box):
+        import hashlib
+        import time
+
         attack_name = "Rainbow Table"
         delay = 0.02  # Reduced delay for faster progress bar updates
 
@@ -488,59 +491,58 @@ class PasswordAnalysisTool:
         )
         progress.pack(pady=10)
 
-        input_file = "./dst/input_passwords.txt"
-        output_file = "./dst/rainbow_table_file.txt"
+        rainbow_table_file = "./dst/rainbow_table_file.txt"
         hash_function = hashlib.md5
 
         try:
+            # Step 1: Collect user input from the text box
             user_input = text_box.get("1.0", tk.END).strip()
-            passwords = [
-                line.strip() for line in user_input.splitlines() if line.strip()
-            ]
 
-            if not passwords:
+            if not user_input:
                 messagebox.showerror(
-                    attack_name, "No passwords provided in the text box."
+                    attack_name, "No password provided in the text box."
                 )
                 attack_window.destroy()
                 return
 
-            passwords = passwords[:10]
+            # Hash the user input password
+            user_password_hash = hash_function(user_input.encode()).hexdigest()
 
-            # Write passwords to the input file
-            with open(input_file, "w") as infile:
-                infile.write("\n".join(passwords) + "\n")
+            # Step 2: Read the rainbow table file
+            with open(rainbow_table_file, "r") as file:
+                lines = file.readlines()
 
-            unique_passwords = set(passwords)
-            total_passwords = len(unique_passwords)
+            # Parse the rainbow table into a dictionary
+            rainbow_table = {}
+            for line in lines:
+                password, hash_value = line.strip().split(":")
+                rainbow_table[hash_value] = password
 
-            # Calculate and display estimated time
-            estimated_time = total_passwords * delay
-            est_minutes, est_seconds = divmod(estimated_time, 60)
-            tk.Label(
-                attack_window,
-                text=f"Estimated Time: {int(est_minutes)} minutes, {int(est_seconds)} seconds",
-            ).pack(pady=5)
+            # Step 3: Compare the user's hashed password with the rainbow table
+            total_hashes = len(rainbow_table)
+            progress_step = 100 / total_hashes
 
-            with open(output_file, "w") as outfile:
-                for index, password in enumerate(unique_passwords):
-                    # Hash the password
-                    hashed = hash_function(password.encode()).hexdigest()
-                    outfile.write(f"{password}:{hashed}\n")
+            found_password = None
+            for index, (hash_value, password) in enumerate(
+                rainbow_table.items(), start=1
+            ):
+                progress["value"] = index * progress_step
+                attack_window.update_idletasks()
+                time.sleep(delay)
 
-                    # Display "Password found successfully" for each password
-                    progress["value"] = ((index + 1) / total_passwords) * 100
-                    text_box.insert(
-                        tk.END,
-                        f"\n{password} : {hashed}\nPassword found successfully!\n",
-                    )
-                    text_box.see(tk.END)  # Auto-scroll
-                    attack_window.update_idletasks()
-                    time.sleep(delay)
+                if hash_value == user_password_hash:
+                    found_password = password
+                    break
 
+            # Display results
+            if found_password:
                 messagebox.showinfo(
                     attack_name,
-                    f"{attack_name} Completed! Rainbow table generated successfully.",
+                    f"Password found: {found_password}\nHash: {user_password_hash}",
+                )
+            else:
+                messagebox.showinfo(
+                    attack_name, "Password not found in the rainbow table."
                 )
 
         except Exception as e:
@@ -551,7 +553,9 @@ class PasswordAnalysisTool:
         attack_window.destroy()
 
         # Update the text box with the result
-        text_box.insert(tk.END, f"\n{attack_name} operation completed.\n")
+        text_box.insert(
+            tk.END, f"\n{attack_name} operation completed. Check results above.\n"
+        )
 
     def show_about(self):
         top = tk.Toplevel(self.root)
