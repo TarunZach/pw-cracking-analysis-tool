@@ -499,16 +499,30 @@ class PasswordAnalysisTool:
             user_input = text_box.get("1.0", tk.END).strip()
 
             if not user_input:
-                messagebox.showerror(
-                    attack_name, "No password provided in the text box."
-                )
+                messagebox.showerror(attack_name, "No input provided in the text box.")
                 attack_window.destroy()
                 return
 
-            # Hash the user input password
-            user_password_hash = hash_function(user_input.encode()).hexdigest()
+            # Step 2: Determine if input is already a hash
+            is_hash = len(user_input) == 32 and all(
+                c in "0123456789abcdef" for c in user_input.lower()
+            )
 
-            # Step 2: Read the rainbow table file
+            if not is_hash:
+                # Input is a plaintext password, hash it and display the hash
+                user_password_hash = hash_function(user_input.encode()).hexdigest()
+                text_box.insert(tk.END, f"\nInput hashed: {user_password_hash}\n")
+                messagebox.showinfo(
+                    attack_name, f"Hash of the password: {user_password_hash}"
+                )
+                # Stop further execution since this was a plaintext input
+                attack_window.destroy()
+                return
+
+            # If input is a hash, proceed with comparison
+            user_password_hash = user_input
+
+            # Step 3: Read the rainbow table file
             with open(rainbow_table_file, "r") as file:
                 lines = file.readlines()
 
@@ -518,7 +532,7 @@ class PasswordAnalysisTool:
                 password, hash_value = line.strip().split(":")
                 rainbow_table[hash_value] = password
 
-            # Step 3: Compare the user's hashed password with the rainbow table
+            # Step 4: Compare the user's hash with the rainbow table
             total_hashes = len(rainbow_table)
             progress_step = 100 / total_hashes
 
